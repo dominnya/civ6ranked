@@ -1,0 +1,80 @@
+@startuml civ6ranked_database
+
+skinparam BackgroundColor #FFFFFF
+skinparam Shadowing false
+skinparam RoundCorner 0
+
+skinparam DefaultFontSize 12
+
+skinparam ClassFontColor #000000
+skinparam ClassAttributeIconColor #000000
+skinparam ClassAttributeFontColor #000000
+skinparam ClassStereotypeFontColor #000000
+skinparam ClassBorderColor #666666
+skinparam ClassBackgroundColor #EEEEEE
+skinparam ClassBorderThickness 1.5
+
+skinparam ArrowColor #666666
+skinparam ArrowThickness 1.5
+
+skinparam Nodesep 50
+skinparam Ranksep 50
+
+skinparam Linetype ortho
+
+hide empty members
+
+entity lobby {
+  * id: int <<pk>>
+  --
+  match_id: int <<fk>>
+  ' The player who created the lobby.
+  * owner_id: int <<fk>>
+  --
+  * code: text
+  --
+  * is_active: boolean = false
+  * created_at: timestamptz = now()
+}
+
+entity player {
+  * id: int <<pk>>
+  --
+  ingame_id: text <<unique>>
+  * discord_id: text <<unique>>
+  --
+  * elo: int
+  * is_calibrating: boolean = true
+  * created_at: timestamptz = now()
+}
+
+entity match_result {
+  * id: int <<pk>>
+  --
+  * match_id: int <<fk>>
+  * player_id: int <<fk>>
+  --
+  ' ...
+  --
+  * place: int
+  * elo: int
+  * created_at: timestamptz = now()
+}
+
+entity match {
+  * id: int <<pk>>
+  --
+  map_size: text
+  map_type: text
+  dlc_list: text[]
+  * mod_list: text[]
+  --
+  * created_at: timestamptz = now()
+}
+
+match ||--o{ lobby
+match ||-right-o{ match_result
+player ||-up-o{ match_result
+player ||-left-o{ lobby
+
+@enduml

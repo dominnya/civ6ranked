@@ -1,0 +1,14 @@
+{
+  "name": "@civ6ranked/discord",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun run --watch src/index.ts",
+    "types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@storona/discord.js": "2.0.0",
+    "discord.js": "14.25.1",
+    "openapi-typescript": "7.13.0",
+    "storona": "2.0.0"
+  }
+}

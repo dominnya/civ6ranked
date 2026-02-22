@@ -1,0 +1,40 @@
+export enum GeneralMessage {
+  HEALTHY = 'HEALTHY',
+  HEADLESS_UNHEALTHY = 'HEADLESS_UNHEALTHY',
+}
+
+export enum ValidationMessage {
+  VALIDATION_ERROR = 'VALIDATION_ERROR',
+}
+
+export enum AuthMessage {
+  MISSING_SERVICE_TOKEN = 'MISSING_SERVICE_TOKEN',
+  INVALID_SERVICE_TOKEN = 'INVALID_SERVICE_TOKEN',
+}
+
+export enum LobbyMessage {
+  LOBBY_FETCHED = 'LOBBY_FETCHED',
+  JOINED = 'JOINED',
+  LEFT = 'LEFT',
+  INVALID_LOBBY_CODE = 'INVALID_LOBBY_CODE',
+  LOBBY_NOT_FOUND = 'LOBBY_NOT_FOUND',
+  ALREADY_IN_LOBBY = 'ALREADY_IN_LOBBY',
+  LOBBY_WAIT_TOO_LONG = 'LOBBY_WAIT_TOO_LONG',
+  NOT_IN_LOBBY = 'NOT_IN_LOBBY',
+  UNKNOWN_LOBBY_ERROR = 'UNKNOWN_LOBBY_ERROR',
+  NOT_OWNER = 'NOT_OWNER',
+  READY = 'READY',
+}
+
+export enum GameMessage {
+  FINISHED = 'FINISHED',
+}
+
+export enum PlayerMessage {
+  PROFILE_FETCHED = 'PROFILE_FETCHED',
+  PROFILE_HISTORY_FETCHED = 'PROFILE_HISTORY_FETCHED',
+  PROFILE_LINKED = 'PROFILE_LINKED',
+  INGAME_ID_ALREADY_LINKED = 'INGAME_ID_ALREADY_LINKED',
+}
+
+export type ApiResponseMessage = GeneralMessage | ValidationMessage | AuthMessage | LobbyMessage | GameMessage | PlayerMessage;
