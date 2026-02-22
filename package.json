@@ -7,6 +7,8 @@
     "start:headless": "turbo run start --filter=@civ6ranked/backend --filter=@civ6ranked/discord",
     "start:local": "turbo run start --filter=@civ6ranked/local",
     "dev": "turbo run dev",
+    "dev:headless": "turbo run dev --filter=@civ6ranked/backend --filter=@civ6ranked/discord",
+    "dev:local": "turbo run dev --filter=@civ6ranked/local",
     "lint": "eslint .",
     "fmt": "prettier --write .",
     "sql:up": "turbo run sql:up",
