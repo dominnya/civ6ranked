@@ -4,12 +4,17 @@ WORKDIR /app
 # --- Install dependencies ---
 FROM base AS install
 COPY package.json bun.lock ./
-COPY apps/*/package.json apps/*/package.json
-RUN bun install --ignore-scripts
+COPY apps apps
+
+RUN bun install --cwd . --ignore-scripts
+RUN bun install --cwd apps/discord --ignore-scripts
+RUN bun install --cwd apps/backend --ignore-scripts
 
 # --- Release ---
 FROM base AS release
 COPY --from=install /app/node_modules node_modules
+COPY --from=install /app/apps/discord/node_modules apps/discord/node_modules
+COPY --from=install /app/apps/backend/node_modules apps/backend/node_modules
 COPY package.json bun.lock turbo.json tsconfig.json ./
 COPY apps apps
 
