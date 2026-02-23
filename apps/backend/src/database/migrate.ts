@@ -57,7 +57,7 @@ function discoverMigrations(): string[] {
   return files.sort();
 }
 
-async function migrate(): Promise<void> {
+export async function migrate(): Promise<void> {
   await injectServiceTokenGuc();
   await ensureMigrationsTable();
 
@@ -66,8 +66,7 @@ async function migrate(): Promise<void> {
   const pending = allMigrations.filter(name => !applied.has(name));
 
   if (pending.length === 0) {
-    console.log('No pending migrations.');
-    await db.close();
+    console.log('✓ No pending migrations.');
     return;
   }
 
@@ -77,21 +76,15 @@ async function migrate(): Promise<void> {
     const filePath = resolve(MIGRATIONS_DIR, name);
     const sqlContent = readFileSync(filePath, 'utf-8');
 
-    console.log(`  ↑ Applying ${name}...`);
+    console.log(`↑ Applying ${name}...`);
 
     await db.begin(async tx => {
       await tx.unsafe(sqlContent);
       await tx`INSERT INTO _migrations (name) VALUES (${name})`;
     });
 
-    console.log(`  ✓ Applied ${name}`);
+    console.log(`✓ Applied ${name}`);
   }
 
   console.log('All migrations applied successfully.');
-  await db.close();
 }
-
-migrate().catch(error => {
-  console.error('Migration failed:', error);
-  process.exit(1);
-});

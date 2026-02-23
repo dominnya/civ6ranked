@@ -4,6 +4,7 @@ import Fastify from 'fastify';
 import { createRouter } from 'storona';
 
 import { config, toListenOptions } from '~/config';
+import { migrate } from '~/database/migrate';
 import { repo } from '~/database/repositories';
 import { buildSpec, defineYaml, exportSpec } from '~/utils/openapi';
 import { generateOpenApiTypes } from '~/utils/types';
@@ -36,6 +37,7 @@ async function createApp(): Promise<void> {
     configuration: { url: `${config.prefix}/openapi` },
   });
 
+  await migrate();
   await repo.lobby.resetActive();
   await generateOpenApiTypes();
   await app.listen(toListenOptions(config));
