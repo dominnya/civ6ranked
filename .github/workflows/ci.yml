@@ -34,10 +34,12 @@ jobs:
     steps:
       - name: Prepare SSH
         env:
-          SSH_PRIVATE_KEY_B64: ${{ secrets.SSH_PRIVATE_KEY_B64 }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
         run: |
-          echo "$SSH_PRIVATE_KEY_B64" | base64 -d > /tmp/deploy_key
+          cat << 'EOF' > /tmp/deploy_key
+          $SSH_PRIVATE_KEY
+          EOF
           chmod 600 /tmp/deploy_key
           eval "$(ssh-agent -s)"
           ssh-add /tmp/deploy_key
