@@ -2,7 +2,10 @@
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
   "tasks": {
-    "start": {},
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
     "types": {},
     "sql:up": {
       "cache": false,
