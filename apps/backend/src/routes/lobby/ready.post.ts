@@ -29,7 +29,7 @@ export default define()
   .meta({
     path: '/lobby/ready',
     method: 'post',
-    summary: 'Marks the lobby as ready',
+    summary: 'Mark the lobby as ready',
     description: 'Marks the lobby as ready, if all players are ready, the game will start',
     tags: ['Lobby'],
     security: [{ serviceAuth: [] }],
