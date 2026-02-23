@@ -3,7 +3,7 @@ import { $ } from 'bun';
 import { config } from '~/config';
 
 export async function generateOpenApiTypes() {
-  const rankingOpenApi = `http://${config.serviceHost}:${config.servicePort}${config.servicePrefix}/openapi/yaml`;
+  const rankingOpenApi = `${config.serviceUrl}/openapi/yaml`;
   try {
     await $`openapi-typescript ${rankingOpenApi} -o dist/openapi.d.ts`.quiet();
     console.log('✓ Generated openapi.d.ts');

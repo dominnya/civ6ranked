@@ -3,7 +3,7 @@ import { $ } from 'bun';
 import { config } from '~/config';
 
 export async function generateOpenApiTypes() {
-  const machineOpenApi = `http://${config.machineHost}:${config.machinePort}${config.machinePrefix}/openapi/yaml`;
+  const machineOpenApi = `${config.machineUrl}/openapi/yaml`;
   try {
     await $`openapi-typescript ${machineOpenApi} -o dist/openapi.d.ts`.quiet();
     console.log('✓ Generated openapi.d.ts');

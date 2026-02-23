@@ -66,9 +66,7 @@ export async function bfetch<E extends keyof paths, M extends MethodKey<E>>(
   endpoint: E,
   options: BfetchOptions<E, M>
 ): Promise<ResponseJson<E, M>> {
-  const url = `http://${config.serviceHost}:${config.servicePort}${config.servicePrefix}${endpoint}${buildQuery(
-    options.query as Record<string, unknown> | undefined
-  )}`;
+  const url = `${config.serviceUrl}${endpoint}${buildQuery(options.query as Record<string, unknown> | undefined)}`;
 
   const headers = new Headers(options.init?.headers);
   if (config.serviceToken && !headers.has('Authorization')) {
