@@ -1,6 +1,13 @@
 import { $ } from 'bun';
 
+import { config } from '~/config';
+
 export async function generateOpenApiTypes() {
-  await $`openapi-typescript apps/backend/dist/openapi.yml -o apps/discord/dist/openapi.d.ts`.cwd('../..').quiet();
-  console.log('✓ Generated openapi.d.ts');
+  const rankingOpenApi = `http://${config.serviceHost}:${config.servicePort}${config.servicePrefix}/openapi/yaml`;
+  try {
+    await $`openapi-typescript ${rankingOpenApi} -o dist/openapi.d.ts`.quiet();
+    console.log('✓ Generated openapi.d.ts');
+  } catch {
+    console.error('✗ Failed to generate ranking openapi.d.ts!');
+  }
 }

@@ -32,7 +32,7 @@ async function createApp(): Promise<void> {
 
   await app.register(ScalarApiReference, {
     routePrefix: '/docs',
-    configuration: { url: `${config.prefix}/openapi` },
+    configuration: { url: `${config.prefix}/openapi/json` },
   });
 
   await resetState();

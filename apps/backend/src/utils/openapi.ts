@@ -8,9 +8,9 @@ import { config } from '~/config';
 import type { Type } from 'arktype';
 import type { JsonObject, JsonSchema, ParameterMeta, ResponseMeta, RouteMeta } from '~/types/openapi';
 
-const SPEC_DIR = 'dist';
-const SPEC_PATH_JSON = 'dist/openapi.json';
-const SPEC_PATH_YAML = 'dist/openapi.yml';
+export const SPEC_DIR = 'dist';
+export const SPEC_PATH_JSON = 'dist/openapi.json';
+export const SPEC_PATH_YAML = 'dist/openapi.yml';
 
 export const ROUTE_META = Symbol.for('routeMeta');
 
