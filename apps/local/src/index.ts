@@ -18,6 +18,14 @@ async function createApp(): Promise<void> {
         },
       },
     },
+    ...(config.ssl
+      ? {
+          https: {
+            key: await Bun.file(config.sslKeyPath).text(),
+            cert: await Bun.file(config.sslCertPath).text(),
+          },
+        }
+      : {}),
   });
 
   await createRouter(app, {

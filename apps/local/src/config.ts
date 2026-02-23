@@ -7,8 +7,13 @@ export interface AppConfig {
   readonly routeDirectory: string;
   readonly serviceToken: string;
   readonly username: string;
+
   readonly logsLocation: string;
   readonly savesLocation: string;
+
+  readonly ssl: boolean;
+  readonly sslKeyPath: string;
+  readonly sslCertPath: string;
 }
 
 function createConfig(): AppConfig {
@@ -21,6 +26,9 @@ function createConfig(): AppConfig {
     username: process.env.USERNAME ?? 'civ6ranked',
     logsLocation: process.env.LOGS_LOCATION ?? 'logs',
     savesLocation: process.env.SAVES_LOCATION ?? 'saves',
+    ssl: process.env.SSL === 'true',
+    sslKeyPath: process.env.SSL_KEY_PATH ?? '',
+    sslCertPath: process.env.SSL_CERT_PATH ?? '',
   };
 }
 
