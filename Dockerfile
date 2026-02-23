@@ -10,7 +10,7 @@ RUN bun install --frozen-lockfile --production --ignore-scripts
 FROM base AS release
 COPY --from=install /app/node_modules node_modules
 COPY package.json bun.lock tsconfig.json ./
-COPY src src
+COPY apps apps
 
 ARG PORT=1212
 ENV NODE_ENV=production
