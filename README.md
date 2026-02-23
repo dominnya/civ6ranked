@@ -5,8 +5,8 @@
 - [x] /me command with Elo UI
 - [ ] /history command with game history
 - [ ] Implement Elo system
-- [ ] Dockerize the application
-- [ ] CI/CD pipeline
+- [x] Dockerize the application
+- [x] CI/CD pipeline
 
 ## Project In A Nutshell
 
