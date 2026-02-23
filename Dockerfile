@@ -1,10 +1,11 @@
-FROM oven/bun:1 AS base
+FROM oven/bun:1.3.9 AS base
 WORKDIR /app
 
 # --- Install dependencies ---
 FROM base AS install
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile --production --ignore-scripts
+COPY apps/*/package.json apps/*/package.json
+RUN bun install --ignore-scripts
 
 # --- Release ---
 FROM base AS release
