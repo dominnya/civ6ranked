@@ -10,7 +10,7 @@ RUN bun install --ignore-scripts
 # --- Release ---
 FROM base AS release
 COPY --from=install /app/node_modules node_modules
-COPY package.json bun.lock tsconfig.json ./
+COPY package.json bun.lock turbo.json tsconfig.json ./
 COPY apps apps
 
 ARG PORT=1212
