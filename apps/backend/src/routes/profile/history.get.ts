@@ -3,7 +3,6 @@ import { type } from 'arktype';
 import { player } from '~/database/repositories/player';
 import { PlayerMessage } from '~/types/response';
 import { define } from '~/utils/define';
-import { serviceAuth } from '~/utils/guards/auth';
 import { validate } from '~/utils/guards/validate';
 import { send } from '~/utils/response';
 
@@ -68,7 +67,7 @@ export default define()
       },
     },
   })
-  .guard([serviceAuth, validate({ querystring: ProfileHistoryQuery })])
+  .guard([validate({ querystring: ProfileHistoryQuery })])
   .handle<{
     Querystring: typeof ProfileHistoryQuery.infer;
     Reply: typeof ProfileHistoryReply.infer;
