@@ -31,6 +31,7 @@ export default define()
     summary: 'Leave a lobby',
     description: 'Leaves a lobby with the given owner ID',
     tags: ['Lobby'],
+    security: [{ serviceAuth: [] }],
     requestBody: {
       description: 'The owner ID of the lobby to leave',
       required: true,

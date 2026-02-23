@@ -1,0 +1,5 @@
+components:
+  securitySchemes:
+    serviceAuth:
+      type: http
+      scheme: bearer

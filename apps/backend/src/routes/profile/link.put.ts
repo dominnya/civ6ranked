@@ -32,6 +32,7 @@ export default define()
     method: 'put',
     summary: 'Link player profile',
     tags: ['Player'],
+    security: [{ serviceAuth: [] }],
     requestBody: {
       required: true,
       schema: ProfileLinkRequestBody,

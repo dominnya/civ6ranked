@@ -24,6 +24,7 @@ export default define()
     summary: 'Leave a game',
     description: 'Leaves an existing game if the client is in one',
     tags: ['Game'],
+    security: [{ serviceAuth: [] }],
     responses: {
       200: {
         description: 'Successfully left the game',

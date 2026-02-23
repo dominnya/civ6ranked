@@ -28,6 +28,7 @@ export default define()
     summary: 'Finish a game',
     description: 'Finishes a game with the given ID',
     tags: ['Game'],
+    security: [{ serviceAuth: [] }],
     requestBody: {
       description: 'The ID of the game to finish',
       required: true,

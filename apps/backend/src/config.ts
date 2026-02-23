@@ -7,6 +7,7 @@ export interface AppConfig {
   readonly routeDirectory: string;
   readonly databaseUrl: string;
 
+  readonly ownUrl: string;
   readonly machineUrl: string;
 
   readonly ssl: boolean;
@@ -26,6 +27,9 @@ function createConfig(): AppConfig {
     prefix: (process.env.API_PREFIX ?? '/api/v1') as `/${string}`,
     routeDirectory: 'src/routes',
     databaseUrl,
+    ownUrl:
+      process.env.OWN_URL ??
+      `http://${process.env.HOST ?? 'localhost'}:${process.env.PORT ?? '1212'}${process.env.API_PREFIX ?? '/api/v1'}`,
     machineUrl: process.env.MACHINE_URL ?? 'http://localhost:1313',
     ssl: process.env.SSL === 'true',
     sslDir: process.env.SSL_DIR ?? '',

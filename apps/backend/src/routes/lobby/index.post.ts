@@ -32,6 +32,7 @@ export default define()
     summary: 'Join a lobby',
     description: 'Joins a lobby with the given code',
     tags: ['Lobby'],
+    security: [{ serviceAuth: [] }],
     requestBody: {
       description: 'The code of the lobby to join',
       required: true,

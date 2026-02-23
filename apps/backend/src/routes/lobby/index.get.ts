@@ -24,6 +24,7 @@ export default define()
     method: 'get',
     summary: 'Get current lobby',
     tags: ['Lobby'],
+    security: [{ serviceAuth: [] }],
     responses: {
       200: {
         description: 'Get current lobby',

@@ -122,7 +122,7 @@ export function buildSpec(yamlComponents: JsonObject): JsonObject {
       title: 'civ6ranked API',
       version: '1.0.0',
     },
-    servers: [{ url: `http://${config.host}:${config.port}${config.prefix}` }],
+    servers: [{ url: config.ownUrl }],
     paths: buildPaths(),
     ...yamlComponents,
   };

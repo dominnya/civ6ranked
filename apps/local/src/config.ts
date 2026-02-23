@@ -8,6 +8,8 @@ export interface AppConfig {
   readonly serviceToken: string;
   readonly username: string;
 
+  readonly ownUrl: string;
+
   readonly logsLocation: string;
   readonly savesLocation: string;
 
@@ -23,6 +25,9 @@ function createConfig(): AppConfig {
     routeDirectory: 'src/routes',
     serviceToken: process.env.SERVICE_TOKEN ?? '',
     username: process.env.USERNAME ?? 'civ6ranked',
+    ownUrl:
+      process.env.OWN_URL ??
+      `http://${process.env.HOST ?? 'localhost'}:${process.env.PORT ?? '1313'}${process.env.API_PREFIX ?? '/api/v1'}`,
     logsLocation: process.env.LOGS_LOCATION ?? 'logs',
     savesLocation: process.env.SAVES_LOCATION ?? 'saves',
     ssl: process.env.SSL === 'true',

@@ -22,6 +22,7 @@ export default define()
     summary: 'Ready in the lobby',
     description: 'Ready in the lobby to start the game',
     tags: ['Lobby'],
+    security: [{ serviceAuth: [] }],
     responses: {
       200: {
         description: 'Successfully ready in the lobby',

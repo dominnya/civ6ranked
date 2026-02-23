@@ -31,6 +31,7 @@ export default define()
     summary: 'Get game logs',
     description: 'Retrieves the game logs',
     tags: ['Game'],
+    security: [{ serviceAuth: [] }],
     responses: {
       200: {
         description: 'Zip file containing the game logs',

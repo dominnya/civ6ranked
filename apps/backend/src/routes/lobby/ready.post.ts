@@ -32,6 +32,7 @@ export default define()
     summary: 'Marks the lobby as ready',
     description: 'Marks the lobby as ready, if all players are ready, the game will start',
     tags: ['Lobby'],
+    security: [{ serviceAuth: [] }],
     requestBody: {
       description: 'The ID of the lobby owner',
       required: true,

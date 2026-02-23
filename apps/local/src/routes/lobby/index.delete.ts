@@ -22,6 +22,7 @@ export default define()
     summary: 'Leave a lobby',
     description: 'Leaves an existing lobby if the client is in one',
     tags: ['Lobby'],
+    security: [{ serviceAuth: [] }],
     responses: {
       200: {
         description: 'Successfully left the lobby',
