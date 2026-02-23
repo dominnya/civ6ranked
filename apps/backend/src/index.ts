@@ -23,8 +23,8 @@ async function createApp(): Promise<void> {
     ...(config.ssl
       ? {
           https: {
-            key: await Bun.file(config.sslKeyPath).text(),
-            cert: await Bun.file(config.sslCertPath).text(),
+            key: await Bun.file(`${config.sslDir}/key.pem`).text(),
+            cert: await Bun.file(`${config.sslDir}/cert.pem`).text(),
           },
         }
       : {}),

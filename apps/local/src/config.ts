@@ -12,8 +12,7 @@ export interface AppConfig {
   readonly savesLocation: string;
 
   readonly ssl: boolean;
-  readonly sslKeyPath: string;
-  readonly sslCertPath: string;
+  readonly sslDir: string;
 }
 
 function createConfig(): AppConfig {
@@ -27,8 +26,7 @@ function createConfig(): AppConfig {
     logsLocation: process.env.LOGS_LOCATION ?? 'logs',
     savesLocation: process.env.SAVES_LOCATION ?? 'saves',
     ssl: process.env.SSL === 'true',
-    sslKeyPath: process.env.SSL_KEY_PATH ?? '',
-    sslCertPath: process.env.SSL_CERT_PATH ?? '',
+    sslDir: process.env.SSL_DIR ?? '',
   };
 }
 

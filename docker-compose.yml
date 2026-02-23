@@ -4,6 +4,8 @@ services:
     restart: unless-stopped
     ports:
       - '${PORT:-1212}:1212'
+    volumes:
+      - ${SSL_DIR}:${SSL_DIR}:ro
     env_file:
       - ./apps/backend/.env
       - ./apps/discord/.env

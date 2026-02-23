@@ -13,8 +13,7 @@ export interface AppConfig {
   readonly machineToken: string;
 
   readonly ssl: boolean;
-  readonly sslKeyPath: string;
-  readonly sslCertPath: string;
+  readonly sslDir: string;
 
   readonly serviceToken: string;
 }
@@ -35,8 +34,7 @@ function createConfig(): AppConfig {
     machinePrefix: (process.env.MACHINE_PREFIX ?? '/api/v1') as `/${string}`,
     machineToken: process.env.MACHINE_TOKEN ?? '',
     ssl: process.env.SSL === 'true',
-    sslKeyPath: process.env.SSL_KEY_PATH ?? '',
-    sslCertPath: process.env.SSL_CERT_PATH ?? '',
+    sslDir: process.env.SSL_DIR ?? '',
     serviceToken: process.env.SERVICE_TOKEN ?? '',
   };
 }
