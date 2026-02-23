@@ -22,7 +22,6 @@
     "apps/backend": {
       "name": "@civ6ranked/backend",
       "dependencies": {
-        "@civ6ranked/shared": "workspace:*",
         "@scalar/fastify-api-reference": "1.44.25",
         "@storona/fastify": "2.0.0",
         "ajv": "8.18.0",
@@ -35,7 +34,6 @@
     "apps/discord": {
       "name": "@civ6ranked/discord",
       "dependencies": {
-        "@civ6ranked/shared": "workspace:*",
         "@storona/discord.js": "2.0.0",
         "discord.js": "14.25.1",
         "openapi-typescript": "7.13.0",
@@ -45,7 +43,6 @@
     "apps/local": {
       "name": "@civ6ranked/local",
       "dependencies": {
-        "@civ6ranked/shared": "workspace:*",
         "@gutenye/ocr-node": "1.4.8",
         "@nut-tree-fork/nut-js": "4.2.6",
         "@scalar/fastify-api-reference": "1.44.25",
@@ -61,9 +58,6 @@
         "@types/archiver": "7.0.0",
         "@types/node": "^22",
       },
-    },
-    "packages/shared": {
-      "name": "@civ6ranked/shared",
     },
   },
   "packages": {
@@ -124,8 +118,6 @@
     "@civ6ranked/discord": ["@civ6ranked/discord@workspace:apps/discord"],
 
     "@civ6ranked/local": ["@civ6ranked/local@workspace:apps/local"],
-
-    "@civ6ranked/shared": ["@civ6ranked/shared@workspace:packages/shared"],
 
     "@commitlint/cli": ["@commitlint/cli@20.4.2", "", { "dependencies": { "@commitlint/format": "^20.4.0", "@commitlint/lint": "^20.4.2", "@commitlint/load": "^20.4.0", "@commitlint/read": "^20.4.0", "@commitlint/types": "^20.4.0", "tinyexec": "^1.0.0", "yargs": "^17.0.0" }, "bin": { "commitlint": "./cli.js" } }, "sha512-YjYSX2yj/WsVoxh9mNiymfFS2ADbg2EK4+1WAsMuckwKMCqJ5PDG0CJU/8GvmHWcv4VRB2V02KqSiecRksWqZQ=="],
 

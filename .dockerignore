@@ -1,0 +1,16 @@
+node_modules
+dist
+.env
+.env.*
+!.env.example
+.git
+.github
+.husky
+tests
+*.log
+*.md
+.gitignore
+.dockerignore
+eslint.config.js
+commitlint.config.ts
+bunfig.toml
