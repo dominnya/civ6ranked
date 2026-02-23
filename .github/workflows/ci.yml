@@ -34,24 +34,22 @@ jobs:
     steps:
       - name: Prepare SSH
         env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
         run: |
-          printf "%s" "$SSH_PRIVATE_KEY" | tr -d '\r' > /tmp/deploy_key
-          printf "\n" >> /tmp/deploy_key
-          chmod 600 /tmp/deploy_key
-          eval "$(ssh-agent -s)"
-          ssh-add /tmp/deploy_key
           mkdir -p ~/.ssh
-          echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
+          echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ env.SSH_PORT }} ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
       - name: Deploy
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
+          SSH_HOST: ${{ env.SSH_HOST }}
+          SSH_PORT: ${{ env.SSH_PORT }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
           ssh -p "${SSH_PORT:-22}" "$SSH_USER@$SSH_HOST" << EOF
