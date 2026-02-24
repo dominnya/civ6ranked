@@ -2,46 +2,166 @@ import { AttachmentBuilder } from 'discord.js';
 
 import type { paths } from '~types';
 
-const RANK_NAMES = [
-  'Железо 1',
-  'Железо 2',
-  'Железо 3',
-  'Бронза 1',
-  'Бронза 2',
-  'Бронза 3',
-  'Серебро 1',
-  'Серебро 2',
-  'Серебро 3',
-  'Золото 1',
-  'Золото 2',
-  'Золото 3',
-  'Гроссмейстер',
-];
-const RANK_IDS = [
-  'iron-1',
-  'iron-2',
-  'iron-3',
-  'bronze-1',
-  'bronze-2',
-  'bronze-3',
-  'silver-1',
-  'silver-2',
-  'silver-3',
-  'gold-1',
-  'gold-2',
-  'gold-3',
-  'grandmaster',
-];
-const RANK_COLORS = [
-  0x4b4b4b, 0x4b4b4b, 0x4b4b4b, 0x674d27, 0x674d27, 0x674d27, 0xf6f8f9, 0xf6f8f9, 0xf6f8f9, 0xd9c053, 0xd9c053, 0xd9c053, 0x66080f,
-];
+type FixedArray<T, N extends number> = N extends N ? FixedArrayHelper<T, N, []> : never;
 
-interface Rank {
+type FixedArrayHelper<T, N extends number, R extends T[]> = R['length'] extends N ? R : FixedArrayHelper<T, N, [...R, T]>;
+
+interface Rank<T extends number> {
   name: string;
   color: number;
-  id: string;
-  image: AttachmentBuilder;
+  subranks: FixedArray<Subrank, T>;
 }
+
+interface Subrank {
+  elo: number;
+  name: string;
+  attachment: {
+    id: `attachment://${string}`;
+    file: AttachmentBuilder;
+  };
+}
+
+interface SubrankMeta extends Subrank {
+  originName: string;
+  color: number;
+}
+
+const RANK: Rank<1 | 3>[] = [
+  {
+    name: 'Железо',
+    color: 0x4b4b4b,
+    subranks: [
+      {
+        elo: 0,
+        name: 'Железо 1',
+        attachment: {
+          id: 'attachment://iron-1.png',
+          file: new AttachmentBuilder('public/rank/iron-1.png'),
+        },
+      },
+      {
+        elo: 100,
+        name: 'Железо 2',
+        attachment: {
+          id: 'attachment://iron-2.png',
+          file: new AttachmentBuilder('public/rank/iron-2.png'),
+        },
+      },
+      {
+        elo: 200,
+        name: 'Железо 3',
+        attachment: {
+          id: 'attachment://iron-3.png',
+          file: new AttachmentBuilder('public/rank/iron-3.png'),
+        },
+      },
+    ],
+  },
+  {
+    name: 'Бронза',
+    color: 0x927951,
+    subranks: [
+      {
+        elo: 300,
+        name: 'Бронза 1',
+        attachment: {
+          id: 'attachment://bronze-1.png',
+          file: new AttachmentBuilder('public/rank/bronze-1.png'),
+        },
+      },
+      {
+        elo: 400,
+        name: 'Бронза 2',
+        attachment: {
+          id: 'attachment://bronze-2.png',
+          file: new AttachmentBuilder('public/rank/bronze-2.png'),
+        },
+      },
+      {
+        elo: 500,
+        name: 'Бронза 3',
+        attachment: {
+          id: 'attachment://bronze-3.png',
+          file: new AttachmentBuilder('public/rank/bronze-3.png'),
+        },
+      },
+    ],
+  },
+  {
+    name: 'Серебро',
+    color: 0xb6bec2,
+    subranks: [
+      {
+        elo: 600,
+        name: 'Серебро 1',
+        attachment: {
+          id: 'attachment://silver-1.png',
+          file: new AttachmentBuilder('public/rank/silver-1.png'),
+        },
+      },
+      {
+        elo: 700,
+        name: 'Серебро 2',
+        attachment: {
+          id: 'attachment://silver-2.png',
+          file: new AttachmentBuilder('public/rank/silver-2.png'),
+        },
+      },
+      {
+        elo: 800,
+        name: 'Серебро 3',
+        attachment: {
+          id: 'attachment://silver-3.png',
+          file: new AttachmentBuilder('public/rank/silver-3.png'),
+        },
+      },
+    ],
+  },
+  {
+    name: 'Золото',
+    color: 0xd9c053,
+    subranks: [
+      {
+        elo: 900,
+        name: 'Золото 1',
+        attachment: {
+          id: 'attachment://gold-1.png',
+          file: new AttachmentBuilder('public/rank/gold-1.png'),
+        },
+      },
+      {
+        elo: 1000,
+        name: 'Золото 2',
+        attachment: {
+          id: 'attachment://gold-2.png',
+          file: new AttachmentBuilder('public/rank/gold-2.png'),
+        },
+      },
+      {
+        elo: 1100,
+        name: 'Золото 3',
+        attachment: {
+          id: 'attachment://gold-3.png',
+          file: new AttachmentBuilder('public/rank/gold-3.png'),
+        },
+      },
+    ],
+  },
+  {
+    name: 'Мастер',
+    color: 0x97151e,
+    subranks: [
+      {
+        elo: 1200,
+        name: 'Мастер',
+        attachment: {
+          id: 'attachment://master.png',
+          file: new AttachmentBuilder('public/rank/master.png'),
+        },
+      },
+    ],
+  },
+];
 
 /**
  * 0-99 - public/rank/iron-1.png
@@ -56,31 +176,33 @@ interface Rank {
  * 900-999 - public/rank/gold-1.png
  * 1000-1099 - public/rank/gold-2.png
  * 1100-1199 - public/rank/gold-3.png
- * 1200+ - public/rank/grandmaster-1.png
+ * 1200+ - public/rank/master.png
  */
-export function getRank(player: paths['/profile']['get']['responses']['200']['content']['application/json']): Rank {
+export function getRank(player: paths['/profile']['get']['responses']['200']['content']['application/json']): SubrankMeta {
   if (player.is_calibrating)
     return {
-      name: 'Калибровка',
+      originName: 'Калибровка',
       color: 0x000000,
-      id: 'attachment://calibrating-1.png',
-      image: new AttachmentBuilder('public/rank/calibrating-1.png'),
+      elo: 0,
+      name: 'Калибровка',
+      attachment: {
+        id: 'attachment://calibrating-1.png',
+        file: new AttachmentBuilder('public/rank/calibrating-1.png'),
+      },
     };
 
-  if (player.elo > 1199)
-    return {
-      name: 'Гроссмейстер',
-      color: 0x66080f,
-      id: 'attachment://grandmaster-1.png',
-      image: new AttachmentBuilder('public/rank/grandmaster-1.png'),
-    };
-
-  const rank = Math.floor(player.elo / 100);
+  // Find rank first by elo, then determine subrank
+  const rank = RANK.toReversed().find(rank => player.elo >= rank.subranks[0].elo);
+  const subrank = rank?.subranks.toReversed().find(subrank => player.elo >= subrank.elo);
 
   return {
-    name: RANK_NAMES[rank],
-    color: RANK_COLORS[rank],
-    id: `attachment://${RANK_IDS[rank]}.png`,
-    image: new AttachmentBuilder(`public/rank/${RANK_IDS[rank]}.png`),
+    originName: subrank?.name ?? rank?.name ?? 'Без ранга',
+    color: rank?.color ?? 0x000000,
+    elo: player.elo,
+    name: subrank?.name ?? rank?.name ?? 'Без ранга',
+    attachment: subrank?.attachment ?? {
+      id: 'attachment://iron-1.png',
+      file: new AttachmentBuilder('public/rank/iron-1.png'),
+    },
   };
 }

@@ -13,7 +13,7 @@ export default define<'command'>()
   .guard([player, history(1)])
   .handle(interaction => {
     const wl = parseWL(interaction.history);
-    const { name, color, id, image } = getRank(interaction.player);
+    const { name, color, attachment } = getRank(interaction.player);
 
     const embed = new EmbedBuilder()
       .setColor(color)
@@ -23,12 +23,12 @@ export default define<'command'>()
           : `${interaction.user.tag} — ${interaction.player.elo.toString()} РР`,
         iconURL: interaction.user.avatarURL() ?? undefined,
       })
-      .setThumbnail(id)
+      .setThumbnail(attachment.id)
       .addFields(
         { name: 'W', value: wl.wins.toString(), inline: true },
         { name: 'L', value: wl.losses.toString(), inline: true },
         { name: 'Ранг', value: name, inline: true }
       );
 
-    interaction.reply({ embeds: [embed], flags: ['Ephemeral'], files: [image] });
+    interaction.reply({ embeds: [embed], flags: ['Ephemeral'], files: [attachment.file] });
   });
