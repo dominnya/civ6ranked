@@ -1,6 +1,7 @@
 import { Button, keyboard, mouse, Point } from '@nut-tree-fork/nut-js';
 import { type } from 'arktype';
 
+import { config } from '~/config';
 import { LobbyMessage } from '~/types/response';
 import { define } from '~/utils/define';
 import { serviceAuth } from '~/utils/guards/auth';
@@ -67,14 +68,14 @@ export default define()
       await wait(500);
 
       // Move mouse to center of the screen (join code input)
-      await mouse.setPosition(new Point(960, 540 + 25));
+      await mouse.setPosition(new Point(config.screenWidth / 2, config.screenHeight / 2 + 25));
       await mouse.click(Button.LEFT);
 
       // Type join code
       await keyboard.type(request.body.code);
 
       // Move mouse to Join button
-      await mouse.setPosition(new Point(960 + 50, 540 + 80));
+      await mouse.setPosition(new Point(config.screenWidth / 2 + 50, config.screenHeight / 2 + 80));
       await mouse.click(Button.LEFT);
 
       const waitLobbyResult = await waitForLobby();

@@ -18,7 +18,7 @@ export async function setSpectator(): Promise<LobbyMessage> {
   const usernamePoint = await username.point();
   if (!usernamePoint) return LobbyMessage.UNKNOWN_LOBBY_ERROR;
 
-  await mouse.setPosition(new Point(1920 / 2, usernamePoint.y));
+  await mouse.setPosition(new Point(config.screenWidth / 2, usernamePoint.y));
   await mouse.click(Button.LEFT);
   await wait(1000);
 
@@ -34,7 +34,7 @@ export async function setSpectator(): Promise<LobbyMessage> {
   const spectatorPoint = await spectator.point();
   if (!spectatorPoint) return LobbyMessage.UNKNOWN_LOBBY_ERROR;
 
-  await mouse.setPosition(new Point(1920 / 2, spectatorPoint.y));
+  await mouse.setPosition(new Point(config.screenWidth / 2, spectatorPoint.y));
   await mouse.click(Button.LEFT);
 
   return LobbyMessage.READY;

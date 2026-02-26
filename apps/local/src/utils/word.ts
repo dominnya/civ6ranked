@@ -6,6 +6,8 @@ import { join } from 'path';
 import Ocr from '@gutenye/ocr-node';
 import { mouse, screen, Point, Region, imageToJimp } from '@nut-tree-fork/nut-js';
 
+import { config } from '~/config';
+
 // nut.js settings
 screen.config.resourceDirectory = __dirname;
 screen.config.autoHighlight = false;
@@ -40,7 +42,7 @@ const normalizeOcrResult = (result: OcrTextLine[]): OcrWord[] =>
 
 const findWord = async (targetWord: string, region?: Region): Promise<{ word: OcrWord | undefined; captureRegion: Region }> => {
   const ocr = await ocrPromise;
-  const captureRegion: Region = region ?? new Region(0, 0, 1920, 1080);
+  const captureRegion: Region = region ?? new Region(0, 0, config.screenWidth, config.screenHeight);
 
   const img = await screen.grabRegion(captureRegion);
   const imageBuffer = await imageToJimp(img).getBufferAsync('image/png');
@@ -94,7 +96,7 @@ export function word(targetWord: string, region?: Region) {
 
       await mouse.setPosition(new Point(clickX, clickY));
       await mouse.leftClick();
-      await mouse.setPosition(new Point(1920, 1080));
+      await mouse.setPosition(new Point(config.screenWidth, config.screenHeight));
       return true;
     },
   };

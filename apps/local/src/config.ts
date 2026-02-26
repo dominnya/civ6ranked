@@ -1,3 +1,5 @@
+import { screen } from '@nut-tree-fork/nut-js';
+
 import type { FastifyListenOptions } from 'fastify';
 
 export interface AppConfig {
@@ -15,9 +17,12 @@ export interface AppConfig {
 
   readonly ssl: boolean;
   readonly sslDir: string;
+
+  readonly screenWidth: number;
+  readonly screenHeight: number;
 }
 
-function createConfig(): AppConfig {
+async function createConfig(): Promise<AppConfig> {
   return {
     port: Number(process.env.PORT ?? 1313),
     host: process.env.HOST ?? '0.0.0.0',
@@ -32,10 +37,13 @@ function createConfig(): AppConfig {
     savesLocation: process.env.SAVES_LOCATION ?? 'saves',
     ssl: process.env.SSL === 'true',
     sslDir: process.env.SSL_DIR ?? '',
+
+    screenWidth: await screen.width(),
+    screenHeight: await screen.height(),
   };
 }
 
-export const config: AppConfig = createConfig();
+export const config: AppConfig = await createConfig();
 
 export function toListenOptions(cfg: AppConfig): FastifyListenOptions {
   return { port: cfg.port, host: cfg.host };

@@ -1,5 +1,6 @@
 import { Button, Key, keyboard, mouse, Point } from '@nut-tree-fork/nut-js';
 
+import { config } from '~/config';
 import { GameMessage } from '~/types/response';
 import { wait } from '~/utils/wait';
 import { word } from '~/utils/word';
@@ -26,7 +27,7 @@ export async function saveGame(): Promise<GameMessage> {
   await keyboard.type('latest');
 
   // Not using 'Save' detect as it does not work
-  await mouse.setPosition(new Point(1920 / 2 - 50, 1080 - 25));
+  await mouse.setPosition(new Point(config.screenWidth / 2 - 50, config.screenHeight - 25));
   await mouse.click(Button.LEFT);
   await wait(1000);
 
@@ -37,7 +38,7 @@ export async function saveGame(): Promise<GameMessage> {
     if (!(await overwriteWord.exists)) return GameMessage.SAVED;
   }
 
-  await mouse.setPosition(new Point(1920 / 2 - 50, 1080 / 2 + 25));
+  await mouse.setPosition(new Point(config.screenWidth / 2 - 50, config.screenHeight / 2 + 25));
   await mouse.click(Button.LEFT);
   await wait(1000);
 
