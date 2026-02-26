@@ -52,15 +52,15 @@ async function history(discordId: string, page: number, limit: number = 10) {
 }
 
 async function link(discordId: string, ingameId: string) {
-  const ingameLinked = (await db`
+  const ingameLinked = await db<{ discord_id: string }[]>`
     SELECT discord_id FROM player WHERE ingame_id = ${ingameId} LIMIT 1
-  `) as { discord_id: string }[];
+  `;
 
   if (ingameLinked.length > 0) throw PlayerMessage.INGAME_ID_ALREADY_LINKED;
 
-  const player = (await db`
+  const player = await db<Player[]>`
     UPDATE player SET ingame_id = ${ingameId} WHERE discord_id = ${discordId} RETURNING *
-  `) as (Omit<Player, 'ingame_id'> & { ingame_id: string })[];
+  `;
 
   return player[0];
 }

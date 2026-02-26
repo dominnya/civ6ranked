@@ -24,10 +24,15 @@ export enum LobbyMessage {
   UNKNOWN_LOBBY_ERROR = 'UNKNOWN_LOBBY_ERROR',
   NOT_OWNER = 'NOT_OWNER',
   READY = 'READY',
+  NO_AVAILABLE_MACHINE = 'NO_AVAILABLE_MACHINE',
+  ALREADY_OWNS_LOBBY = 'ALREADY_OWNS_LOBBY',
 }
 
 export enum GameMessage {
   FINISHED = 'FINISHED',
+  NOT_IN_GAME = 'NOT_IN_GAME',
+  NO_AVAILABLE_MACHINE = 'NO_AVAILABLE_MACHINE',
+  NOT_OWNER = 'NOT_OWNER',
 }
 
 export enum PlayerMessage {
@@ -37,4 +42,32 @@ export enum PlayerMessage {
   INGAME_ID_ALREADY_LINKED = 'INGAME_ID_ALREADY_LINKED',
 }
 
-export type ApiResponseMessage = GeneralMessage | ValidationMessage | AuthMessage | LobbyMessage | GameMessage | PlayerMessage;
+export enum MachineMessage {
+  MACHINE_CREATED = 'MACHINE_CREATED',
+  MACHINE_DELETED = 'MACHINE_DELETED',
+  UNKNOWN_MACHINE_ERROR = 'UNKNOWN_MACHINE_ERROR',
+}
+
+export enum TaskMessage {
+  TASK_ACCEPTED = 'TASK_ACCEPTED',
+  TASK_STATUS = 'TASK_STATUS',
+  TASK_NOT_FOUND = 'TASK_NOT_FOUND',
+  TASK_ENQUEUE_FAILED = 'TASK_ENQUEUE_FAILED',
+}
+
+export enum TaskStatus {
+  PENDING = 'pending',
+  PROCESSING = 'processing',
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+}
+
+export type ApiResponseMessage =
+  | GeneralMessage
+  | ValidationMessage
+  | AuthMessage
+  | LobbyMessage
+  | GameMessage
+  | PlayerMessage
+  | MachineMessage
+  | TaskMessage;

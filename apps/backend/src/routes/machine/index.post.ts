@@ -1,48 +1,50 @@
 import { type } from 'arktype';
 
 import { repo } from '~/database/repositories';
-import { PlayerMessage } from '~/types/response';
+import { MachineMessage } from '~/types/response';
 import { define } from '~/utils/define';
 import { serviceAuth } from '~/utils/guards/auth';
 import { validate } from '~/utils/guards/validate';
 import { send } from '~/utils/response';
 
 const body = type({
-  discord_id: 'string',
-  ingame_id: 'string',
+  url: 'string',
+  token: 'string',
 });
 
 const reply200 = type({
-  message: "'PROFILE_LINKED'",
-  player: type({
+  message: "'MACHINE_CREATED'",
+  machine: type({
     id: 'number.integer',
-    ingame_id: 'string | null',
-    discord_id: 'string',
-    elo: 'number.integer',
-    is_calibrating: 'boolean',
+    url: 'string',
+    token: 'string',
     created_at: 'string.date.iso',
+    last_called_at: 'null',
+    active: 'true',
+    failures: '0',
   }),
 });
 
 const reply400 = type({
-  message: "'VALIDATION_ERROR' | 'INGAME_ID_ALREADY_LINKED'",
+  message: "'VALIDATION_ERROR' | 'UNKNOWN_MACHINE_ERROR'",
 });
 
 export default define()
   .meta({
-    path: '/profile/link',
-    method: 'put',
-    summary: 'Link player profile',
-    tags: ['Profile', 'Player'],
+    path: '/machine',
+    method: 'post',
+    summary: 'Add a new machine',
+    description: 'Add a new machine for running game simulations',
+    tags: ['Machine'],
     security: [{ serviceAuth: [] }],
     requestBody: {
-      description: 'The IDs to link the player profile with',
+      description: 'The details of the machine to add',
       required: true,
       schema: body,
     },
     responses: {
       200: {
-        description: 'Player profile linked',
+        description: 'Machine added',
         schema: reply200,
       },
       400: {
@@ -56,13 +58,13 @@ export default define()
     Body: typeof body.infer;
     Reply: typeof reply200.infer | typeof reply400.infer;
   }>(async (request, reply) => {
+    const { url, token } = request.body;
+
     try {
-      const { discord_id, ingame_id } = request.body;
+      const machine = await repo.machine.create(url, token);
 
-      const player = await repo.player.link(discord_id, ingame_id);
-
-      send(reply).ok<Omit<typeof reply200.infer, 'message'>>(PlayerMessage.PROFILE_LINKED, { player });
-    } catch (error) {
-      send(reply).badRequest(error as PlayerMessage);
+      return send(reply).ok(MachineMessage.MACHINE_CREATED, { machine });
+    } catch {
+      return send(reply).badRequest(MachineMessage.UNKNOWN_MACHINE_ERROR);
     }
   });

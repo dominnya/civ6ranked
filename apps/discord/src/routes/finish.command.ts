@@ -3,6 +3,7 @@ import { define } from '~/utils/define';
 import { health } from '~/utils/guards/health';
 import { lobby } from '~/utils/guards/lobby';
 import { player } from '~/utils/guards/player';
+import { poll } from '~/utils/poll';
 
 import type { paths } from '~types';
 
@@ -10,13 +11,21 @@ export const description = 'Завершить игру и посчитать р
 export const guildOnly = ['1472119924930510902'];
 
 type Responses =
-  | paths['/game']['delete']['responses']['200']['content']['application/json']['message']
-  | paths['/game']['delete']['responses']['400']['content']['application/json']['message'];
+  | paths['/game/finish']['delete']['responses']['202']['content']['application/json']['message']
+  | paths['/game/finish']['get']['responses']['200']['content']['application/json']['message']
+  | paths['/game/finish']['get']['responses']['400']['content']['application/json']['message']
+  | paths['/game/finish']['get']['responses']['404']['content']['application/json']['message'];
 
 const RESPONSE_MESSAGES: Record<Responses, string> = {
   FINISHED: '✅ Игра сохранена, результаты будут доступны скоро!',
   NOT_IN_GAME: '❌ Бот не состоит в игре!',
+  NOT_OWNER: '🚫 Вы не владелец лобби!',
+  NO_AVAILABLE_MACHINE: '❌ Бот для завершения игры недоступен!',
+  TASK_ACCEPTED: '⏳ Завершение игры в процессе, пожалуйста, подождите...',
+  TASK_NOT_FOUND: '❌ Ошибка поиска задачи!',
+  TASK_STATUS: '⏳ Завершение игры в процессе, пожалуйста, подождите...',
   UNKNOWN_GAME_ERROR: '❌ Неизвестная ошибка игры!',
+  VALIDATION_ERROR: '❌ Неверный формат запроса!',
 };
 
 export default define<'command'>()
@@ -36,16 +45,28 @@ export default define<'command'>()
       });
     }
 
-    const response = bfetch('/game', {
+    const task = await bfetch('/game/finish', {
       method: 'delete',
       body: {
-        id: interaction.lobby.id,
+        lobby_id: interaction.lobby.id,
+        owner_id: interaction.player.id,
       },
     });
 
     await interaction.deferReply();
 
+    const response = await poll(
+      () =>
+        bfetch('/game/finish', {
+          method: 'get',
+          query: {
+            task_id: task.task_id.toString(),
+          },
+        }),
+      2000
+    );
+
     await interaction.editReply({
-      content: RESPONSE_MESSAGES[(await response).message],
+      content: RESPONSE_MESSAGES[response.message],
     });
   });

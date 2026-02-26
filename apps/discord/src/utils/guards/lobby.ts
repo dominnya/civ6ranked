@@ -13,6 +13,9 @@ export const lobby: Guard<LobbyAugmentation, ChatInputCommandInteraction> = asyn
 ): Promise<(ChatInputCommandInteraction & LobbyAugmentation) | undefined> => {
   const lobby = await bfetch('/lobby', {
     method: 'get',
+    query: {
+      discord_id: interaction.user.id,
+    },
   });
 
   return Object.assign(interaction, { lobby: lobby.lobby } as LobbyAugmentation);

@@ -6,25 +6,23 @@ import { define } from '~/utils/define';
 import { validate } from '~/utils/guards/validate';
 import { send } from '~/utils/response';
 
-const ProfileHistoryQuery = type({
+const querystring = type({
   'discord_id': 'string',
   'page': 'string.integer',
   'limit?': 'string.integer',
 });
 
-const ProfileHistoryItem = type({
-  id: 'number',
-  match_id: 'number',
-  player_id: 'number',
-  place: 'number',
-  elo: 'number',
-  created_at: 'string.date.iso',
-  finished_at: 'string.date.iso',
-});
-
-const ProfileHistoryReply = type({
+const reply200 = type({
   message: "'PROFILE_HISTORY_FETCHED'",
-  history: ProfileHistoryItem.array(),
+  history: type({
+    id: 'number.integer',
+    match_id: 'number.integer',
+    player_id: 'number.integer',
+    place: 'number.integer',
+    elo: 'number.integer',
+    created_at: 'string.date.iso',
+    finished_at: 'string.date.iso',
+  }).array(),
 });
 
 export default define()
@@ -32,7 +30,7 @@ export default define()
     path: '/profile/history',
     method: 'get',
     summary: 'Get player profile history',
-    tags: ['Player'],
+    tags: ['Profile', 'Player'],
     parameters: [
       {
         name: 'discord_id',
@@ -63,20 +61,20 @@ export default define()
     responses: {
       200: {
         description: 'Player profile history',
-        schema: ProfileHistoryReply,
+        schema: reply200,
       },
     },
   })
-  .guard([validate({ querystring: ProfileHistoryQuery })])
+  .guard([validate({ querystring })])
   .handle<{
-    Querystring: typeof ProfileHistoryQuery.infer;
-    Reply: typeof ProfileHistoryReply.infer;
+    Querystring: typeof querystring.infer;
+    Reply: typeof reply200.infer;
   }>(async (request, reply) => {
     const { discord_id, page, limit } = request.query;
 
     const history = await player.history(discord_id, +page, +(limit ?? 10));
 
-    send(reply).ok<Omit<typeof ProfileHistoryReply.infer, 'message'>>(PlayerMessage.PROFILE_HISTORY_FETCHED, {
+    send(reply).ok<Omit<typeof reply200.infer, 'message'>>(PlayerMessage.PROFILE_HISTORY_FETCHED, {
       history,
     });
   });

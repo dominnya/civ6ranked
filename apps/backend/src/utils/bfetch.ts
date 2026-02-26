@@ -1,5 +1,4 @@
-import { config } from '~/config';
-
+import type { Machine } from '~/database/repositories/machine';
 import type { paths } from '~types';
 
 type PathItem<E extends keyof paths> = paths[E];
@@ -48,6 +47,7 @@ type BfetchOptions<E extends keyof paths, M extends MethodKey<E>> = {
   readonly query?: MaybeNever<QueryFor<E, M>>;
   readonly body?: MaybeNever<BodyFor<E, M>>;
   readonly init?: RequestInit;
+  readonly machine: Machine;
 };
 
 function buildQuery(query: Record<string, unknown> | undefined): string {
@@ -66,11 +66,12 @@ export async function bfetch<E extends keyof paths, M extends MethodKey<E>>(
   endpoint: E,
   options: BfetchOptions<E, M>
 ): Promise<ResponseJson<E, M>> {
-  const url = `${config.machineUrl}${endpoint}${buildQuery(options.query as Record<string, unknown> | undefined)}`;
+  const url = `${options.machine.url}${endpoint}${buildQuery(options.query as Record<string, unknown> | undefined)}`;
 
   const headers = new Headers(options.init?.headers);
-  if (config.serviceToken && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${config.serviceToken}`);
+
+  if (!headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${options.machine.token}`);
   }
 
   const body = options.body === undefined ? undefined : JSON.stringify(options.body);

@@ -28,10 +28,7 @@ interface MetaBuilder<Augmentation> extends GuardableBuilder<Augmentation> {
 
 /** Creates a fluent route builder: define().meta().guard().handle(). */
 export function define(): MetaBuilder<unknown> {
-  const createBuilder = (
-    routeMeta: RouteMeta | undefined,
-    guards: readonly (Guard | BlockingGuard)[]
-  ): MetaBuilder<unknown> => {
+  const createBuilder = (routeMeta: RouteMeta | undefined, guards: readonly (Guard | BlockingGuard)[]): MetaBuilder<unknown> => {
     const buildRoute = (handler: (request: FastifyRequest, reply: FastifyReply) => unknown): ReturnType<typeof storonaDefine> => {
       const lastGuard = guards[guards.length - 1];
       const hasBlockingGuard = lastGuard !== undefined && lastGuard.length === 3;
@@ -46,6 +43,7 @@ export function define(): MetaBuilder<unknown> {
           Promise.resolve(request as FastifyRequest | undefined)
         );
         if (!current) return;
+
         if (hasBlockingGuard) {
           return (lastGuard as BlockingGuard)(current, reply, (req, rep) => handler(req, rep));
         }
@@ -60,13 +58,13 @@ export function define(): MetaBuilder<unknown> {
     };
 
     const handleBuilder: HandleBuilder<unknown> = {
-      handle: ((handler: (request: FastifyRequest, reply: FastifyReply) => unknown) => buildRoute(handler)) as HandleBuilder<unknown>['handle'],
+      handle: ((handler: (request: FastifyRequest, reply: FastifyReply) => unknown) =>
+        buildRoute(handler)) as HandleBuilder<unknown>['handle'],
     };
 
     const guardableBuilder: GuardableBuilder<unknown> = {
       ...handleBuilder,
-      guard: ((items: readonly (Guard | BlockingGuard)[]) =>
-        createBuilder(routeMeta, items)) as GuardableBuilder<unknown>['guard'],
+      guard: ((items: readonly (Guard | BlockingGuard)[]) => createBuilder(routeMeta, items)) as GuardableBuilder<unknown>['guard'],
     };
 
     return {

@@ -4,14 +4,22 @@ import { repo } from '~/database/repositories';
 import { LobbyMessage } from '~/types/response';
 import { define } from '~/utils/define';
 import { serviceAuth } from '~/utils/guards/auth';
+import { validate } from '~/utils/guards/validate';
 import { send } from '~/utils/response';
 
-const LobbyReply = type({
+// Owner is only allowed to have one lobby, so we can fetch the lobby by owner_id/discord_id
+const querystring = type({
+  owner_id: 'string.integer',
+}).or({
+  discord_id: 'string',
+});
+
+const reply200 = type({
   message: "'LOBBY_FETCHED'",
   lobby: type({
-    id: 'number',
-    match_id: 'number',
-    owner_id: 'number',
+    id: 'number.integer',
+    match_id: 'number.integer',
+    owner_id: 'number.integer',
     code: 'string',
     is_active: 'boolean',
     created_at: 'string.date.iso',
@@ -25,18 +33,41 @@ export default define()
     summary: 'Get current lobby',
     tags: ['Lobby'],
     security: [{ serviceAuth: [] }],
+    parameters: [
+      {
+        name: 'owner_id',
+        in: 'query',
+        required: false,
+      },
+      {
+        name: 'discord_id',
+        in: 'query',
+        required: false,
+      },
+    ],
     responses: {
       200: {
         description: 'Get current lobby',
-        schema: LobbyReply,
+        schema: reply200,
       },
     },
   })
-  .guard([serviceAuth])
+  .guard([serviceAuth, validate({ querystring })])
   .handle<{
-    Reply: typeof LobbyReply.infer;
-  }>(async (_request, reply) => {
-    const lobby = await repo.lobby.findActive();
+    Querystring: typeof querystring.infer;
+    Reply: typeof reply200.infer;
+  }>(async (request, reply) => {
+    if ('owner_id' in request.query) {
+      const lobby = await repo.lobby.getByOwnerId(Number(request.query.owner_id));
 
-    send(reply).ok<Omit<typeof LobbyReply.infer, 'message'>>(LobbyMessage.LOBBY_FETCHED, { lobby });
+      return send(reply).ok<Omit<typeof reply200.infer, 'message'>>(LobbyMessage.LOBBY_FETCHED, { lobby });
+    }
+
+    if ('discord_id' in request.query) {
+      const lobby = await repo.lobby.getByDiscordId(request.query.discord_id);
+
+      return send(reply).ok<Omit<typeof reply200.infer, 'message'>>(LobbyMessage.LOBBY_FETCHED, { lobby });
+    }
+
+    send(reply).badRequest(LobbyMessage.LOBBY_NOT_FOUND);
   });

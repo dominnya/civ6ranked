@@ -1,0 +1,27 @@
+tags:
+  - name: Profile
+    description: Player profile management
+  - name: Lobby
+    description: Lobby game simulation management
+  - name: Game
+    description: Played game simulation management
+  - name: Machine
+    description: Machine management
+  - name: General
+    description: General system information
+x-tagGroups:
+  - name: Profile
+    tags:
+      - Player
+  - name: Lobby
+    tags:
+      - Join
+      - Leave
+      - Ready
+  - name: Game
+    tags:
+      - Finish
+  - name: System
+    tags:
+      - Machine
+      - General

@@ -6,16 +6,16 @@ import { define } from '~/utils/define';
 import { validate } from '~/utils/guards/validate';
 import { send } from '~/utils/response';
 
-const ProfileQuery = type({
+const querystring = type({
   discord_id: 'string',
 });
 
-const ProfileReply = type({
+const reply200 = type({
   message: "'PROFILE_FETCHED'",
-  id: 'number',
+  id: 'number.integer',
   ingame_id: 'string | null',
   discord_id: 'string',
-  elo: 'number',
+  elo: 'number.integer',
   is_calibrating: 'boolean',
   created_at: 'string.date.iso',
 });
@@ -25,7 +25,7 @@ export default define()
     path: '/profile',
     method: 'get',
     summary: 'Get player profile',
-    tags: ['Player'],
+    tags: ['Profile', 'Player'],
     parameters: [
       {
         name: 'discord_id',
@@ -39,16 +39,16 @@ export default define()
     responses: {
       200: {
         description: 'Player profile',
-        schema: ProfileReply,
+        schema: reply200,
       },
     },
   })
-  .guard([validate({ querystring: ProfileQuery })])
+  .guard([validate({ querystring })])
   .handle<{
-    Querystring: typeof ProfileQuery.infer;
-    Reply: typeof ProfileReply.infer;
+    Querystring: typeof querystring.infer;
+    Reply: typeof reply200.infer;
   }>(async (request, reply) => {
     const profile = await repo.player.profile(request.query.discord_id);
 
-    send(reply).ok<Omit<typeof ProfileReply.infer, 'message'>>(PlayerMessage.PROFILE_FETCHED, profile);
+    send(reply).ok<Omit<typeof reply200.infer, 'message'>>(PlayerMessage.PROFILE_FETCHED, profile);
   });

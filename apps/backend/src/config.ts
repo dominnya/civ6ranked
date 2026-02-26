@@ -8,7 +8,6 @@ export interface AppConfig {
   readonly databaseUrl: string;
 
   readonly ownUrl: string;
-  readonly machineUrl: string;
 
   readonly ssl: boolean;
   readonly sslDir: string;
@@ -30,7 +29,6 @@ function createConfig(): AppConfig {
     ownUrl:
       process.env.OWN_URL ??
       `http://${process.env.HOST ?? 'localhost'}:${process.env.PORT ?? '1212'}${process.env.API_PREFIX ?? '/api/v1'}`,
-    machineUrl: process.env.MACHINE_URL ?? 'http://localhost:1313',
     ssl: process.env.SSL === 'true',
     sslDir: process.env.SSL_DIR ?? '',
     serviceToken: process.env.SERVICE_TOKEN ?? '',

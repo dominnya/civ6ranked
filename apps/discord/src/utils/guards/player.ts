@@ -4,7 +4,7 @@ import type { ChatInputCommandInteraction } from 'discord.js';
 import type { Guard } from '~/types/middleware';
 import type { paths } from '~types';
 
-interface PlayerAugmentation {
+export interface PlayerAugmentation {
   readonly player: paths['/profile']['get']['responses']['200']['content']['application/json'];
 }
 

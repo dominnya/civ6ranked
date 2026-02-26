@@ -3,6 +3,7 @@
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "bun run --watch src/index.ts",
+    "types": "tsc --noEmit",
     "sql:up": "bun run src/database/migrate.ts"
   },
   "dependencies": {

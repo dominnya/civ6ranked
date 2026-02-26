@@ -13,6 +13,7 @@ export interface ResponseBuilder {
   readonly badRequest: (message: ApiResponseMessage, detail?: string) => void;
   readonly unauthorized: (message: ApiResponseMessage, detail?: string) => void;
   readonly notFound: (message: ApiResponseMessage, detail?: string) => void;
+  readonly internalError: (message: ApiResponseMessage, detail?: string) => void;
   readonly status: <T extends Record<string, unknown>>(statusCode: number, message: ApiResponseMessage, data?: T) => void;
 }
 
@@ -28,6 +29,7 @@ export function send(reply: FastifyReply): ResponseBuilder {
     badRequest: (message, detail) => sendError(400, message, detail),
     unauthorized: (message, detail) => sendError(401, message, detail),
     notFound: (message, detail) => sendError(404, message, detail),
+    internalError: (message, detail) => sendError(500, message, detail),
     status: sendWithStatus,
   };
 }
