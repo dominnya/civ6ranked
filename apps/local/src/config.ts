@@ -8,7 +8,7 @@ export interface AppConfig {
   readonly prefix: `/${string}`;
   readonly routeDirectory: string;
   readonly serviceToken: string;
-  readonly username: string;
+  readonly ingameId: string;
 
   readonly ownUrl: string;
 
@@ -29,7 +29,7 @@ async function createConfig(): Promise<AppConfig> {
     prefix: (process.env.API_PREFIX ?? '/api/v1') as `/${string}`,
     routeDirectory: 'src/routes',
     serviceToken: process.env.SERVICE_TOKEN ?? '',
-    username: process.env.USERNAME ?? 'civ6ranked',
+    ingameId: process.env.INGAME_ID ?? 'civ6ranked',
     ownUrl:
       process.env.OWN_URL ??
       `http://${process.env.HOST ?? 'localhost'}:${process.env.PORT ?? '1313'}${process.env.API_PREFIX ?? '/api/v1'}`,

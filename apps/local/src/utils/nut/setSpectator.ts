@@ -6,7 +6,7 @@ import { wait } from '~/utils/wait';
 import { word } from '~/utils/word';
 
 export async function setSpectator(): Promise<LobbyMessage> {
-  const username = word(config.username);
+  const username = word(config.ingameId);
 
   if (!(await username.exists)) {
     username.find();
