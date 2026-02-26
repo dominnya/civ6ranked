@@ -14,8 +14,9 @@ async function finish(lobby: Lobby) {
     machine,
   });
 
-  const updatedLobby = await db<{ match_id: number }[]>`UPDATE lobby SET is_active = false WHERE id = ${lobby.id} RETURNING match_id`;
   if (response.message !== 'LEFT') throw response.message;
+
+  const updatedLobby = await db<{ match_id: number }[]>`UPDATE lobby SET is_active = false WHERE id = ${lobby.id} RETURNING match_id`;
 
   // TODO: Logic to create match result
 

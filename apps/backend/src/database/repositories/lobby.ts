@@ -38,11 +38,7 @@ async function join(code: string, ownerId: number, machine: Machine): Promise<Lo
 }
 
 async function leave(lobby: Lobby) {
-  const updatedLobby = await db<Lobby[]>`UPDATE lobby SET is_active = false WHERE is_active = true AND id = ${lobby.id} RETURNING *`;
-
-  if (updatedLobby.length === 0) throw LobbyMessage.LOBBY_NOT_FOUND;
-
-  const machine = await repo.machine.getById(updatedLobby[0].machine_id);
+  const machine = await repo.machine.getById(lobby.machine_id);
   if (!machine) throw LobbyMessage.NO_AVAILABLE_MACHINE;
 
   const response = await bfetch('/lobby', {
@@ -51,6 +47,9 @@ async function leave(lobby: Lobby) {
   });
 
   if (response.message !== 'LEFT') throw LobbyMessage[response.message];
+
+  const updatedLobby = await db<Lobby[]>`UPDATE lobby SET is_active = false WHERE is_active = true AND id = ${lobby.id} RETURNING *`;
+  if (updatedLobby.length === 0) throw LobbyMessage.LOBBY_NOT_FOUND;
 
   return updatedLobby[0];
 }
@@ -74,7 +73,7 @@ async function getById(id: number): Promise<Lobby | null> {
 }
 
 async function getByOwnerId(ownerId: number): Promise<Lobby | null> {
-  const lobby = await db<Lobby[]>`SELECT * FROM lobby WHERE owner_id = ${ownerId}`;
+  const lobby = await db<Lobby[]>`SELECT * FROM lobby WHERE owner_id = ${ownerId} AND is_active = true`;
 
   return lobby?.[0] ?? null;
 }
@@ -84,7 +83,7 @@ async function getByDiscordId(discordId: string): Promise<Lobby | null> {
     SELECT lobby.*
     FROM lobby
     JOIN player ON lobby.owner_id = player.id
-    WHERE player.discord_id = ${discordId}
+    WHERE player.discord_id = ${discordId} AND lobby.is_active = true
   `;
 
   return lobby?.[0] ?? null;
