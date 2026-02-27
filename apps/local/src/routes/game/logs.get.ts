@@ -14,7 +14,7 @@ const GameLogsError = type({
   message: "'LOGS_MISSING'",
 });
 
-const CSV_LOGS = ['City_BuildQueue.csv', 'Game_PlayerScores.csv', 'Player_Stats_2.csv', 'Player_Stats.csv'];
+const CSV_LOGS = ['Player_Stats_2.csv', 'Player_Stats.csv'];
 
 export default define()
   .meta({
