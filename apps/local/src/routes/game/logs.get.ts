@@ -1,7 +1,6 @@
 import { existsSync } from 'fs';
 import { join } from 'path';
 
-import archiver from 'archiver';
 import { type } from 'arktype';
 
 import { config } from '~/config';
@@ -14,7 +13,11 @@ const GameLogsError = type({
   message: "'LOGS_MISSING'",
 });
 
-const CSV_LOGS = ['Player_Stats_2.csv', 'Player_Stats.csv'];
+const LOGS_LOCATION = {
+  'Player_Stats.csv': join(config.logsLocation, 'Player_Stats.csv'),
+  'Player_Stats_2.csv': join(config.logsLocation, 'Player_Stats_2.csv'),
+  'latest.Civ6Save': join(config.savesLocation, 'latest.Civ6Save'),
+};
 
 export default define()
   .meta({
@@ -37,22 +40,27 @@ export default define()
   .guard([serviceAuth])
   .handle(async (_request, reply) => {
     try {
-      const archive = archiver('zip');
+      const logs: Bun.ArchiveInput = {};
 
-      archive.pipe(reply.raw);
-
-      const addFile = (fileName: string, location: string) => {
-        if (!existsSync(join(location, fileName))) {
+      for (const [name, path] of Object.entries(LOGS_LOCATION)) {
+        console.log(`Checking for log file: ${name} at path: ${path}`);
+        if (!existsSync(path)) {
           send(reply).badRequest(GameMessage.LOGS_MISSING);
           return;
         }
-        archive.file(join(location, fileName), { name: fileName });
-      };
 
-      CSV_LOGS.forEach(fileName => addFile(fileName, config.logsLocation));
-      addFile('latest.Civ6Save', config.savesLocation);
+        logs[name] = await Bun.file(path).arrayBuffer();
+      }
 
-      await archive.finalize();
+      const blob = await new Bun.Archive(logs).blob();
+
+      reply
+        .code(200)
+        .header('Content-Type', 'application/gzip')
+        .header('Content-Disposition', 'attachment; filename="logs.tar.gz"')
+        .header('Content-Length', blob.size);
+
+      reply.send(blob.stream());
     } catch {
       return send(reply).badRequest(GameMessage.UNKNOWN_GAME_ERROR);
     }
