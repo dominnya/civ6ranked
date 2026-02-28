@@ -1,3 +1,6 @@
+import { ChannelType } from 'discord.js';
+
+import { config } from '~/config';
 import { bfetch } from '~/utils/bfetch';
 import { define } from '~/utils/define';
 import { health } from '~/utils/guards/health';
@@ -69,4 +72,37 @@ export default define<'command'>()
     await interaction.editReply({
       content: RESPONSE_MESSAGES[response.message],
     });
+
+    if (!config.resultsChannelId || response.message !== 'FINISHED') return;
+
+    const channel = await interaction.client.channels.fetch(config.resultsChannelId);
+    if (!channel || channel.type !== ChannelType.GuildText) return;
+
+    const results = await bfetch('/game', {
+      method: 'get',
+      query: {
+        match_id: response.result.match_id.toString(),
+      },
+    });
+
+    if (results.message !== 'FINISHED') {
+      return channel.send(`❌ Не удалось получить результаты игры #${response.result.match_id}`);
+    }
+
+    const header = [`# ${results.turn} Ход`];
+    const urls = results.urls
+      ? [
+          `-# ├ [Файл сохранения](${results.urls.save_url})`,
+          `-# ├ [Первый файл статистики](${results.urls.stats_url})`,
+          `-# └ [Второй файл статистики](${results.urls.stats2_url})`,
+        ]
+      : [];
+
+    const playerResults = results.results.map(result => {
+      const player = result.discord_id ? `<@${result.discord_id}> (${result.ingame_id})` : result.ingame_id;
+      const rr = result.rr > 0 ? `+${result.rr}` : result.rr.toString();
+      return [`${result.place}. ${player}`, '```diff', `${rr} -> ${result.elo}`, '```'].join('\n');
+    });
+
+    await channel.send([header, ...urls, '', ...playerResults].join('\n'));
   });

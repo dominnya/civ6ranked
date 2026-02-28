@@ -17,3 +17,6 @@ dist
 # Misc
 .DS_Store
 *.pem
+
+# Archives
+apps/backend/public/archives

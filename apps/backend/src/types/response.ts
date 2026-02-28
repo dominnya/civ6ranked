@@ -33,6 +33,8 @@ export enum GameMessage {
   NOT_IN_GAME = 'NOT_IN_GAME',
   NO_AVAILABLE_MACHINE = 'NO_AVAILABLE_MACHINE',
   NOT_OWNER = 'NOT_OWNER',
+  UNKNOWN_SAVE_ERROR = 'UNKNOWN_SAVE_ERROR',
+  NOT_FOUND = 'NOT_FOUND',
 }
 
 export enum PlayerMessage {

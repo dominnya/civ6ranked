@@ -42,12 +42,13 @@ type ResponseJson<E extends keyof paths, M extends MethodKey<E>> =
 
 type MaybeNever<T> = [T] extends [never] ? undefined : T;
 
-type BfetchOptions<E extends keyof paths, M extends MethodKey<E>> = {
+type BfetchOptions<E extends keyof paths, M extends MethodKey<E>, R extends boolean = false> = {
   readonly method: M;
   readonly query?: MaybeNever<QueryFor<E, M>>;
   readonly body?: MaybeNever<BodyFor<E, M>>;
   readonly init?: RequestInit;
   readonly machine: Machine;
+  readonly rawResponse?: R;
 };
 
 function buildQuery(query: Record<string, unknown> | undefined): string {
@@ -62,10 +63,10 @@ function buildQuery(query: Record<string, unknown> | undefined): string {
   return `?${new URLSearchParams(entries).toString()}`;
 }
 
-export async function bfetch<E extends keyof paths, M extends MethodKey<E>>(
+export async function bfetch<E extends keyof paths, M extends MethodKey<E>, R extends boolean = false>(
   endpoint: E,
-  options: BfetchOptions<E, M>
-): Promise<ResponseJson<E, M>> {
+  options: BfetchOptions<E, M, R>
+): Promise<R extends true ? Response : ResponseJson<E, M>> {
   const url = `${options.machine.url}${endpoint}${buildQuery(options.query as Record<string, unknown> | undefined)}`;
 
   const headers = new Headers(options.init?.headers);
@@ -75,6 +76,7 @@ export async function bfetch<E extends keyof paths, M extends MethodKey<E>>(
   }
 
   const body = options.body === undefined ? undefined : JSON.stringify(options.body);
+
   if (body !== undefined) {
     headers.set('Content-Type', 'application/json');
   }
@@ -86,5 +88,10 @@ export async function bfetch<E extends keyof paths, M extends MethodKey<E>>(
     body,
   });
 
-  return (await response.json()) as ResponseJson<E, M>;
+  if (options.rawResponse === true) {
+    return response as R extends true ? Response : never;
+  }
+
+  const json = (await response.json()) as ResponseJson<E, M>;
+  return json as R extends true ? never : ResponseJson<E, M>;
 }

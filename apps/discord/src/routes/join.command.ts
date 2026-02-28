@@ -15,7 +15,7 @@ export const guildOnly = ['1472119924930510902'];
 export const options = [
   {
     type: ApplicationCommandOptionType.String,
-    name: 'code',
+    name: 'код',
     description: 'Unified PC Play код',
     required: true,
   },
@@ -44,7 +44,7 @@ const RESPONSE_MESSAGES: Record<Responses, string> = {
 export default define<'command'>()
   .guard([health, player, lobby])
   .handle(async interaction => {
-    const code = interaction.options.getString('code');
+    const code = interaction.options.getString('код');
     if (!code || !/^[A-Za-z0-9]{3}-[A-Za-z0-9]{3,4}$/.test(code)) {
       return interaction.reply({
         content: '❌ Неверный формат кода!',

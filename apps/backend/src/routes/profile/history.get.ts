@@ -19,7 +19,7 @@ const reply200 = type({
     match_id: 'number.integer',
     player_id: 'number.integer',
     place: 'number.integer',
-    elo: 'number.integer',
+    rr: 'number.integer',
     created_at: 'string.date.iso',
     finished_at: 'string.date.iso',
   }).array(),

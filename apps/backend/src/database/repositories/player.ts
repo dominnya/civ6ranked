@@ -1,13 +1,34 @@
 import { db } from '~/database';
 import { PlayerMessage } from '~/types/response';
 
-interface Player {
+import type { PlayerHistory as RankingPlayerHistory, PlayerElo as RankingPlayerElo } from '~/utils/ranking/types';
+
+export interface Player {
   id: number;
   ingame_id: string | null;
   discord_id: string;
   elo: number;
   is_calibrating: boolean;
   created_at: string;
+}
+
+export interface PlayerHistory {
+  id: number;
+  match_id: number;
+  player_id: number;
+  place: number;
+  rr: number;
+  created_at: string;
+  finished_at: string;
+}
+
+export interface PlayerHistories {
+  [ingameId: string]: (PlayerHistory & { ingame_id: string })[];
+}
+
+export interface PlayerElo {
+  ingame_id: string;
+  elo: number;
 }
 
 async function create(discordId: string): Promise<Player> {
@@ -27,10 +48,10 @@ async function profile(discordId: string): Promise<Player> {
   return player[0];
 }
 
-async function history(discordId: string, page: number, limit: number = 10) {
+async function history(discordId: string, page: number, limit: number = 10): Promise<PlayerHistory[]> {
   const offset = (page - 1) * limit;
 
-  const history = (await db`
+  const history = await db<PlayerHistory[]>`
     SELECT mr.*, m.created_at AS finished_at
     FROM match_result mr
     JOIN player p ON mr.player_id = p.id
@@ -38,17 +59,71 @@ async function history(discordId: string, page: number, limit: number = 10) {
     WHERE p.discord_id = ${discordId}
     ORDER BY m.created_at DESC
     LIMIT ${limit} OFFSET ${offset}
-  `) as {
-    id: number;
-    match_id: number;
-    player_id: number;
-    place: number;
-    elo: number;
-    created_at: string;
-    finished_at: string;
-  }[];
+  `;
 
   return history;
+}
+
+async function histories(ingameIds: string[], page: number, limit: number = 10): Promise<PlayerHistories> {
+  if (!ingameIds.length) return {};
+
+  const offset = (page - 1) * limit;
+
+  const rows = await db<PlayerHistories[string]>`
+    SELECT *
+    FROM (
+      SELECT
+        mr.*,
+        p.ingame_id,
+        m.created_at AS finished_at,
+        ROW_NUMBER() OVER (
+          PARTITION BY p.ingame_id
+          ORDER BY m.created_at DESC
+        ) AS rn
+      FROM match_result mr
+      JOIN player p ON mr.player_id = p.id
+      JOIN match m ON mr.match_id = m.id
+      WHERE p.ingame_id IN (${ingameIds})
+    ) ranked
+    WHERE rn > ${offset}
+      AND rn <= ${offset + limit}
+    ORDER BY ingame_id, finished_at DESC
+  `;
+
+  const grouped: PlayerHistories = {};
+
+  for (const row of rows) {
+    const { ingame_id, ...history } = row;
+
+    if (!grouped[ingame_id]) {
+      grouped[ingame_id] = [];
+    }
+
+    grouped[ingame_id].push({
+      ...history,
+      ingame_id,
+    });
+  }
+
+  return grouped;
+}
+
+function historiesToStreak(histories: PlayerHistories): RankingPlayerHistory[] {
+  return Object.entries(histories).flatMap(([ingameId, matches]): RankingPlayerHistory[] =>
+    matches
+      .slice()
+      .sort((a, b) => new Date(a.finished_at).getTime() - new Date(b.finished_at).getTime())
+      .map<Pick<RankingPlayerHistory, 'ingameId' | 'type'>>(match => ({
+        ingameId,
+        type: match.rr > 0 ? 'W' : 'L',
+      }))
+      .reduce<RankingPlayerHistory[]>((acc, curr) => {
+        const prev = acc.at(-1);
+        const streak = prev && prev.type === curr.type ? prev.streak + 1 : 1;
+
+        return [...acc, { ...curr, streak }];
+      }, [])
+  );
 }
 
 async function link(discordId: string, ingameId: string) {
@@ -65,9 +140,26 @@ async function link(discordId: string, ingameId: string) {
   return player[0];
 }
 
+async function getElosByIngameId(ingameId: string[]): Promise<PlayerElo[]> {
+  const elos = await db<PlayerElo[]>`SELECT ingame_id, elo FROM player WHERE ingame_id = ANY(${db.array(ingameId, 'TEXT')})`;
+  return elos;
+}
+
+// snake_case to camelCase
+function elosToPlayerElos(elos: PlayerElo[]): RankingPlayerElo[] {
+  return elos.map(elo => ({
+    ingameId: elo.ingame_id,
+    elo: elo.elo,
+  }));
+}
+
 export const player = {
   profile,
   create,
   history,
+  histories,
+  historiesToStreak,
   link,
+  getElosByIngameId,
+  elosToPlayerElos,
 };

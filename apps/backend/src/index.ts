@@ -1,3 +1,6 @@
+import { resolve } from 'path';
+
+import fastifyStatic from '@fastify/static';
 import ScalarApiReference from '@scalar/fastify-api-reference';
 import { adapter } from '@storona/fastify';
 import Fastify from 'fastify';
@@ -11,6 +14,7 @@ import { generateOpenApiTypes } from '~/utils/types';
 
 async function createApp(): Promise<void> {
   const app = Fastify({
+    bodyLimit: 20 * 1024 * 1024, // 20 MB
     logger: {
       transport: {
         target: 'pino-pretty',
@@ -45,8 +49,19 @@ async function createApp(): Promise<void> {
     configuration: { url: `${config.prefix}/openapi/json` },
   });
 
+  // Serve game results
+  await app.register(fastifyStatic, {
+    root: resolve('public/archives'),
+    prefix: '/archives',
+  });
+
+  app.addContentTypeParser('application/gzip', { parseAs: 'buffer' }, (_req, body, done) => {
+    // body will be a Buffer
+    done(null, body);
+  });
+
   await migrate();
-  await repo.lobby.resetActive();
+  if (process.env.npm_lifecycle_event !== 'dev') await repo.lobby.resetActive();
   await generateOpenApiTypes();
   await app.listen(toListenOptions(config));
 }

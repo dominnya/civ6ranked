@@ -43,7 +43,6 @@ export default define()
       const logs: Bun.ArchiveInput = {};
 
       for (const [name, path] of Object.entries(LOGS_LOCATION)) {
-        console.log(`Checking for log file: ${name} at path: ${path}`);
         if (!existsSync(path)) {
           send(reply).badRequest(GameMessage.LOGS_MISSING);
           return;

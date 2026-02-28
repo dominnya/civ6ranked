@@ -21,6 +21,7 @@ x-tagGroups:
   - name: Game
     tags:
       - Finish
+      - Manual
   - name: System
     tags:
       - Machine

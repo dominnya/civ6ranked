@@ -4,11 +4,11 @@
 - [x] Save logic
 - [x] /me command with Elo UI
 - [ ] /history command with game history
-- [ ] Implement Elo system
+- [x] Implement Elo system
 - [x] Dockerize the application
 - [x] CI/CD pipeline
-- [ ] Queue system for machine
-- [ ] Support for multiple machines
+- [x] Queue system for machine
+- [x] Support for multiple machines
 
 ## Project In A Nutshell
 
