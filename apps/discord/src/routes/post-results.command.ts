@@ -3,6 +3,7 @@ import { ApplicationCommandOptionType, ChannelType, TextChannel } from 'discord.
 import { config } from '~/config';
 import { bfetch } from '~/utils/bfetch';
 import { define } from '~/utils/define';
+import { admin } from '~/utils/guards/admin';
 import { health } from '~/utils/guards/health';
 import { player } from '~/utils/guards/player';
 
@@ -25,7 +26,7 @@ export const options = [
 ];
 
 export default define<'command'>()
-  .guard([health, player])
+  .guard([health, player, admin])
   .handle(async interaction => {
     const matchId = interaction.options.getInteger('матч');
     const channelOption = interaction.options.getChannel('канал');
