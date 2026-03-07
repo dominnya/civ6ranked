@@ -50,9 +50,8 @@ async function calculateMatchResult(archiveData: Blob | ArrayBuffer | Buffer) {
   const { civs, players, getMaxTurn } = createParser(paths);
 
   // playerName is the same as ingameId
-  const playerNames = civs()
-    .filter(p => !!p.playerName)
-    .map(p => p.playerName) as string[];
+  const onlineCivs = civs().filter(p => !!p.playerName && p.playerName !== config.spectatorId);
+  const playerNames = onlineCivs.map(p => p.playerName) as string[];
   const onlinePlayers = players().filter(p => playerNames.includes(p.player));
 
   const elos = await repoPlayer.getElosByIngameId(playerNames);
@@ -63,15 +62,15 @@ async function calculateMatchResult(archiveData: Blob | ArrayBuffer | Buffer) {
 
   const { results } = createEloPipeline(onlinePlayers, formattedElos, streak);
 
-  return { results, civs, players, getMaxTurn, urls };
+  return { results, civs: onlineCivs, players: onlinePlayers, getMaxTurn, urls };
 }
 
 async function createMatchResults(matchId: number, elo: Awaited<ReturnType<typeof calculateMatchResult>>): Promise<void> {
   return db.transaction(async trx => {
     await trx`UPDATE match SET save_url = ${elo.urls.savePath}, stats_url = ${elo.urls.statsPath}, stats2_url = ${elo.urls.stats2Path}, max_turn = ${elo.getMaxTurn()} WHERE id = ${matchId}`;
 
-    const playerCivs = elo.civs(),
-      playerStats = elo.players(),
+    const playerCivs = elo.civs,
+      playerStats = elo.players,
       playerResults = elo.results();
 
     // Only save results if at least 4 valid players were found in the logs to prevent RR manipulation in smaller matches.
@@ -217,7 +216,6 @@ async function finish(lobby: Lobby) {
   const blob = await logs.blob();
 
   try {
-    console.log(blob);
     const matchResult = await calculateMatchResult(blob);
 
     await createMatchResults(match.match_id, matchResult);

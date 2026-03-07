@@ -13,6 +13,7 @@ export interface AppConfig {
   readonly sslDir: string;
 
   readonly serviceToken: string;
+  readonly spectatorId: string;
 }
 
 function createConfig(): AppConfig {
@@ -32,6 +33,7 @@ function createConfig(): AppConfig {
     ssl: process.env.SSL === 'true',
     sslDir: process.env.SSL_DIR ?? '',
     serviceToken: process.env.SERVICE_TOKEN ?? '',
+    spectatorId: process.env.SPECTATOR_ID ?? 'civ6ranked',
   };
 }
 
